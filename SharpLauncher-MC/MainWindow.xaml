@@ -1,0 +1,46 @@
+﻿<Window x:Class="SharpLauncher_MC.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SharpLauncher_MC"
+        xmlns:xmc="clr-namespace:xmc.uc" Title="SLMC, build 0"
+        mc:Ignorable="d" SnapsToDevicePixels="true" TextOptions.TextRenderingMode="Aliased" TextOptions.TextFormattingMode="Display" RenderOptions.EdgeMode="Aliased"
+        MinHeight="420" MinWidth="280" FontSize="{DynamicResource zFontSize}" Foreground="{DynamicResource zTextColor}" FontFamily="{DynamicResource zFontFamily}"
+        Closing="Window_Closing" SizeChanged="Window_SizeChanged" Width="0" Height="0" SizeToContent="WidthAndHeight">
+    <Grid x:Name="Workspace">
+        <Grid Background="{DynamicResource zBackground}">
+            
+        </Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid x:Name="ProfilesWorkspace">
+                <xmc:zSwitch Height="24"/>
+                <TextBlock HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="4" FontSize="8" Text="With love from Russia &lt;3 " Foreground="{DynamicResource zBackgroundHighlight}"/>
+            </Grid>
+            <Grid Grid.Row="1" Background="{DynamicResource zBackgroundDeep}">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <xmc:zButton Margin="0,8,0,0" VerticalAlignment="Top" Text="PLAY" FontSize="24" Height="48" MaxWidth="480" x:Name="Play"/>
+                <TextBlock Grid.Row="1" Text="username" HorizontalAlignment="Left" VerticalAlignment="Bottom" Padding="8"/>
+            </Grid>
+        </Grid>
+        <Border x:Name="Overlay" Background="Black" BorderThickness="0" Opacity="0" Visibility="Hidden" MouseUp="Overlay_MouseUp" />
+        <Grid Background="{DynamicResource zBackgroundDeep}" Margin="-280, 0, 280, 0" Visibility="Hidden"
+              x:Name="Settings" HorizontalAlignment="Left" MaxWidth="480" 
+              Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type FrameworkElement}}}">
+            <xmc:zButton Width="200" HorizontalAlignment="Center"/>
+        </Grid>
+        <Grid x:Name="Login">
+            
+        </Grid>
+        <Grid x:Name="Warning">
+            
+        </Grid>
+    </Grid>
+</Window>

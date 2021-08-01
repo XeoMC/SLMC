@@ -1,0 +1,33 @@
+﻿<Application x:Class="SharpLauncher_MC.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:SharpLauncher_MC"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <SolidColorBrush x:Key="zColor" Color="#008542"/>
+        <SolidColorBrush x:Key="zHoverColor" Color="#0DD166"/>
+        <SolidColorBrush x:Key="zClickedColor" Color="#006431"/>
+        <SolidColorBrush x:Key="zDisabledColor" Color="#006230"/>
+        <SolidColorBrush x:Key="zTextColor" Color="White"/>
+        <SolidColorBrush x:Key="zDecorationColor" Color="#0CCE40"/>
+
+        <SolidColorBrush x:Key="zBackground" Color="#181818"/>
+        <SolidColorBrush x:Key="zBackgroundHighlight" Color="#353535"/>
+        <SolidColorBrush x:Key="zBackgroundDeep" Color="#141414"/>
+        <SolidColorBrush x:Key="zBackgroundDeepHighlight" Color="#282828"/>
+        <SolidColorBrush x:Key="zBackgroundLight" Color="#1C1C1C"/>
+        <SolidColorBrush x:Key="zBackgroundLightHighlight" Color="#696969"/>
+
+        <CornerRadius x:Key="zCorner">
+            0
+        </CornerRadius>
+        <FontFamily x:Key="zFontFamily">
+            hooge 05_55 Cyr2
+        </FontFamily>
+        <sys:Double x:Key="zFontSize">
+            16
+        </sys:Double>
+
+    </Application.Resources>
+</Application>
