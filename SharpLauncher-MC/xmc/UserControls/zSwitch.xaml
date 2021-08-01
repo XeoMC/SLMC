@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:xmc.uc"
-             mc:Ignorable="d"
+             mc:Ignorable="d" Margin="4"
              d:DesignHeight="20" d:DesignWidth="240" SnapsToDevicePixels="true">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -12,8 +12,8 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid>
-            <Border x:Name="bg" CornerRadius="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:zSwitch}},Path=Corner}"/>
-            <Border x:Name="inside" CornerRadius="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:zSwitch}},Path=Corner}" Height="14" Width="14" HorizontalAlignment="Left" Margin="3"/>
+            <Border x:Name="bg" CornerRadius="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:zSwitch}},Path=Corner}" Background="{DynamicResource zBackgroundDeep}"/>
+            <Border x:Name="inside" CornerRadius="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:zSwitch}},Path=Corner}" Background="{DynamicResource zBackgroundDeepHighlight}" Height="14" Width="14" HorizontalAlignment="Left" Margin="3"/>
         </Grid>
         <TextBlock Grid.Column="1" Margin="6, 0" Text="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:zSwitch}},Path=Text}" Foreground="White" VerticalAlignment="Center"/>
         <Rectangle Fill="#ff000000" Opacity="0.01" x:Name="rect" Grid.ColumnSpan="1048576"/>

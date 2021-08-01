@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:xmc.uc"
-             mc:Ignorable="d"
+             mc:Ignorable="d" Margin="4"
              d:DesignHeight="32" d:DesignWidth="128">
     <Grid>
         <Border x:Name="border" BorderThickness="0" Background="{DynamicResource zColor}" CornerRadius="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:zButton}},Path=Corner}" Grid.ColumnSpan="2049158"/>
