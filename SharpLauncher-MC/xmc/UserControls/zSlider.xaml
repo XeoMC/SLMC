@@ -5,9 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:xmc.uc"
              mc:Ignorable="d" 
-             d:DesignHeight="32" d:DesignWidth="256" SnapsToDevicePixels="true">
+             d:DesignHeight="40" d:DesignWidth="256" SnapsToDevicePixels="true">
     <Grid>
         <Border Height="2" BorderThickness="0" Background="{DynamicResource zBackgroundHighlight}" Margin="4, 0, 4, 0"/>
-        <local:zButton Width="16" Text="" HorizontalAlignment="Left" Margin="4" MouseDown="zButton_MouseDown" MouseUp="zButton_MouseUp"/>
+        <local:zButton Height="32" Width="16" Text="" HorizontalAlignment="Left" Margin="4" MouseDown="zButton_MouseDown" MouseUp="zButton_MouseUp"/>
     </Grid>
 </UserControl>
