@@ -73,6 +73,7 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Globalization.Calendars, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Globalization.Calendars.4.3.0\lib\net46\System.Globalization.Calendars.dll</HintPath>
       <Private>True</Private>
@@ -196,6 +197,18 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Config.cs" />
+    <Compile Include="JSON\Classifiers.cs" />
+    <Compile Include="JSON\Condition.cs" />
+    <Compile Include="JSON\Download.cs" />
+    <Compile Include="JSON\Extract.cs" />
+    <Compile Include="JSON\File.cs" />
+    <Compile Include="JSON\JavaVersion.cs" />
+    <Compile Include="JSON\Library.cs" />
+    <Compile Include="JSON\Logging.cs" />
+    <Compile Include="JSON\Natives.cs" />
+    <Compile Include="JSON\OS.cs" />
+    <Compile Include="JSON\Profile.cs" />
+    <Compile Include="JSON\Rule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -211,6 +224,9 @@
       <DependentUpon>zEdit.xaml</DependentUpon>
     </Compile>
     <Compile Include="xmc\UserControls\zGlobals.cs" />
+    <Compile Include="xmc\UserControls\zLink.xaml.cs">
+      <DependentUpon>zLink.xaml</DependentUpon>
+    </Compile>
     <Compile Include="xmc\UserControls\zList.xaml.cs">
       <DependentUpon>zList.xaml</DependentUpon>
     </Compile>
@@ -246,6 +262,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="xmc\UserControls\zLink.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="xmc\UserControls\zList.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -262,6 +282,9 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AssemblyInfo.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

@@ -10,7 +10,6 @@ namespace SharpLauncher_MC
     public class Config
     {
         public static Config i;
-        public bool settingsOpen = false;
         public bool LargeMode = false;
         public Size resolution = new Size(280,420);
         public double settingsSize = 1.5;

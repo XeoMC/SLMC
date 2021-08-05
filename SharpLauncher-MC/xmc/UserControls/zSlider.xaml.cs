@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SharpLauncher_MC.xmc.UserControls
+namespace xmc.uc
 {
     /// <summary>
     /// Interaction logic for zSlider.xaml
@@ -26,7 +26,7 @@ namespace SharpLauncher_MC.xmc.UserControls
             SizeChanged += ZSlider_SizeChanged;
         }
 
-        public event 
+//        public event 
 
         private void ZSlider_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -34,9 +34,9 @@ namespace SharpLauncher_MC.xmc.UserControls
         }
 
         public static readonly DependencyProperty
-            MinimumValueProperty = DependencyProperty.Register("MinimumValue", typeof(double), typeof(zSlider), new PropertyMetadata(0d, new PropertyChangedCallback());
+            MinimumValueProperty = DependencyProperty.Register("MinimumValue", typeof(double), typeof(zSlider), new PropertyMetadata(0d, new PropertyChangedCallback(MinimumValueChangedCallback)));
 
-        private static void MinimumValueChangedCallback()
+        private static void MinimumValueChangedCallback(DependencyObject s, DependencyPropertyChangedEventArgs e)
         {
 
         }

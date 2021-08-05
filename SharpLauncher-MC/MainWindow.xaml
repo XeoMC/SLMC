@@ -16,6 +16,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <Grid x:Name="ProfilesWorkspace">
                 <xmc:zSwitch Height="20"/>
@@ -26,15 +27,44 @@
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <xmc:zButton Margin="0,8,0,0" VerticalAlignment="Top" Text="PLAY" FontSize="24" Height="48" MaxWidth="480" x:Name="Play"/>
-                <TextBlock Grid.Row="1" Text="username" HorizontalAlignment="Left" VerticalAlignment="Bottom" Padding="8"/>
+                <xmc:zButton Margin="0,8,0,0" VerticalAlignment="Top" Text="PLAY" FontSize="24" Height="48" MaxWidth="480" x:Name="Play" click="Play_click" />
+            </Grid>
+            <Grid Grid.Row="2" Height="34" Background="{DynamicResource zBackgroundDeep}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="16px"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="settingsText" Text="settings" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="7" Foreground="{DynamicResource zBackgroundLightHighlight}"/>
+                <Image Grid.Column="2" x:Name="Skin"/>
+                <TextBlock Grid.Column="3" x:Name="usernameText" Text="username" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="7"/>
             </Grid>
         </Grid>
-        <Border x:Name="Overlay" Background="Black" BorderThickness="0" Opacity="0" Visibility="Hidden" MouseUp="Overlay_MouseUp" />
-        <Grid Background="{DynamicResource zBackgroundDeep}" Margin="-280, 0, 280, 0" Visibility="Hidden"
-              x:Name="Settings" HorizontalAlignment="Left" MaxWidth="480" 
+        <Border x:Name="OverlaySettings" Background="Black" BorderThickness="0" Opacity="0" Visibility="Hidden" MouseUp="Overlay_MouseUp" />
+
+        <Grid Background="{DynamicResource zBackgroundDeep}"  
+              x:Name="Settings" HorizontalAlignment="Left" MaxWidth="480" Margin="-280, 0, 280, 0" Visibility="Hidden"
               Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type FrameworkElement}}}">
-            <xmc:zButton Width="200" HorizontalAlignment="Center"/>
+
+            <StackPanel>
+                <xmc:zSlider/>
+                <xmc:zSlider/>
+                <xmc:zSlider/>
+                <xmc:zSlider/>
+                <xmc:zSlider/>
+                <xmc:zSlider/>
+            </StackPanel>
+            <TextBlock FontSize="8" HorizontalAlignment="Right" VerticalAlignment="Bottom" TextAlignment="Right" Margin="3, 2" Foreground="{DynamicResource zBackgroundLightHighlight}">                    
+                    <TextBlock x:Name="ModeText" Text="offline mode"/><LineBreak/>
+                    <TextBlock x:Name="VersionText" Text="SharpLauncher_MC v0.0.0.0"/><LineBreak/>
+                    <Hyperlink NavigateUri="https://github.com/XeoMC/SLMC">https://github.com/XeoMC/SLMC</Hyperlink>
+                </TextBlock>
+        </Grid>
+        <Grid Background="{DynamicResource zBackgroundDeep}"
+              x:Name="ProfileConfig" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-280, 0, 280, 0" Visibility="Hidden"
+              Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type FrameworkElement}}}">
+
         </Grid>
         <Grid x:Name="Login">
             

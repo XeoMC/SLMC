@@ -7,7 +7,11 @@
              mc:Ignorable="d" Margin="4"
              d:DesignHeight="32" d:DesignWidth="128">
     <Grid>
-        <Border x:Name="border" BorderThickness="0" Background="{DynamicResource zColor}" CornerRadius="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:zButton}},Path=Corner}" Grid.ColumnSpan="2049158"/>
+        <Border x:Name="border" BorderThickness="0" CornerRadius="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:zButton}},Path=Corner}" Grid.ColumnSpan="2049158">
+            <Border.Background>
+                <SolidColorBrush Color="{Binding Color, Source={StaticResource zColor}}" x:Name="bg"/>
+            </Border.Background>
+        </Border>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0" x:Name="w"/>
