@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharpLauncher_MC.JSON
 {
-    class JavaVersion
+    public class JavaVersion
     {
         public string component;
         public uint majorVersion;

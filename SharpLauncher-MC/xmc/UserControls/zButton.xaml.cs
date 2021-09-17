@@ -228,7 +228,6 @@ namespace xmc.uc
             }
             set
             {
-                tx.Text = value;
                 SetValue(TextProperty, value);
             }
         }
@@ -240,7 +239,6 @@ namespace xmc.uc
             }
             set
             {
-                tx.FontSize = value;
                 SetValue(FontSizeProperty, value);
             }
         }
@@ -252,7 +250,6 @@ namespace xmc.uc
             }
             set
             {
-                tx.FontFamily = value;
                 SetValue(FontFamilyProperty, value);
             }
         }

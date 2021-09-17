@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace SharpLauncher_MC.JSON
 {
-    class File
+    public class File
     {
         public string id;
         public string sha1;
         public ulong size;
         public ulong totalSize;
         public string url;
+        public string path;
     }
 }

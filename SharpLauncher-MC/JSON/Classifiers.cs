@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SharpLauncher_MC.JSON
 {
-    class Classifiers
+    public class Classifiers
     {
         public File javadoc;
         [JsonProperty(PropertyName = "natives-osx")]

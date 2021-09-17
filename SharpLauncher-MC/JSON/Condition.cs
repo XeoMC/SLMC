@@ -6,9 +6,18 @@ using System.Threading.Tasks;
 
 namespace SharpLauncher_MC.JSON
 {
-    class Condition
+    public class Condition
     {
         public List<Rule> rules;
-        public dynamic value;
+        public object value;
+        public bool Result(Profile p)
+        {
+            bool result = false;
+            foreach (Rule r in this.rules)
+                if (r.Result(p))
+                    if (r.action == Action.allow) result = true;
+                    else if (r.action == Action.disallow) result = false;
+            return result;
+        }
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,9 +34,14 @@ namespace SharpLauncher_MC
     /// 
     public partial class MainWindow : Window
     {
-        public static HttpClient httpClient = new HttpClient();
-        public static WebClient webClient = new WebClient();
-        public static Mojang mojang = new Mojang(httpClient);
+        public static HttpClient HttpClient = new HttpClient();
+        public static WebClient WebClient = new WebClient();
+        public static Mojang Mojang = new Mojang(HttpClient);
+        public static Session CurrentSession;
+        public static string getLauncherOSName()
+        {
+            return "windows"; // because of wpf
+        }
         public MainWindow()
         {
             InitializeComponent();
@@ -45,11 +51,11 @@ namespace SharpLauncher_MC
             usernameText.Text = "__tacoguy";
             /*
             Console.WriteLine(usernameText.Text);
-            PlayerUUID uid = mojang.GetUUID(usernameText.Text).GetAwaiter().GetResult();
+            PlayerUUID uid = Mojang.GetUUID(usernameText.Text).GetAwaiter().GetResult();
             Console.WriteLine(uid.UUID);
-            PlayerProfile p = mojang.GetProfileUsingUUID(uid.UUID).GetAwaiter().GetResult();
+            PlayerProfile p = Mojang.GetProfileUsingUUID(uid.UUID).GetAwaiter().GetResult();
 
-            MemoryStream skinData = new MemoryStream(webClient.DownloadData(new Uri(p.Skin.Url)));
+            MemoryStream skinData = new MemoryStream(WebClient.DownloadData(new Uri(p.Skin.Url)));
             Bitmap skin = new Bitmap(skinData);
             skin = skin.Clone(new System.Drawing.Rectangle(8, 8, 8, 8), skin.PixelFormat);
 
@@ -145,18 +151,18 @@ namespace SharpLauncher_MC
                 winSizeFix = true;
             }
 //            this.Title = $"{Workspace.ActualWidth} < {this.MinWidth} = {(Workspace.ActualWidth < this.MinWidth).ToString().ToUpper()}";
-            if ((Play.ActualWidth == Play.MaxWidth && !Config.i.LargeMode) || (e.NewSize.Width - this.Width + Workspace.ActualWidth < Play.MaxWidth * 0.6 && Config.i.LargeMode))
-                toggleLargeMode(!Config.i.LargeMode);
+            if ((Play.ActualWidth == Play.MaxWidth && !Config.i.largeMode) || (e.NewSize.Width - this.Width + Workspace.ActualWidth < Play.MaxWidth * 0.6 && Config.i.largeMode))
+                toggleLargeMode(!Config.i.largeMode);
         }
 
         private void toggleLargeMode(bool? isLarge = null)
         {
             bool iL = false;
-            if (isLarge == null) iL = !Config.i.LargeMode;
+            if (isLarge == null) iL = !Config.i.largeMode;
             else iL = (bool)isLarge;
             if(iL)
             {
-                Config.i.LargeMode = true;
+                Config.i.largeMode = true;
                 DoubleAnimation a = new DoubleAnimation { From = Play.ActualWidth, To = Play.MaxWidth * 0.6, Duration = zGlobals.animationSpeed.Multiply(3), DecelerationRatio = 1 };
                 Play.BeginAnimation(WidthProperty, a);
                 DoubleAnimation a1 = new DoubleAnimation
@@ -175,7 +181,7 @@ namespace SharpLauncher_MC
                     AccelerationRatio = 1
                 };
                 Settings.BeginAnimation(MaxWidthProperty, a1);
-                Config.i.LargeMode = false;
+                Config.i.largeMode = false;
                 Play.BeginAnimation(WidthProperty, null);
                 Play.Width = double.NaN;
             }
@@ -188,7 +194,7 @@ namespace SharpLauncher_MC
 
         private void Play_click(object sender, RoutedEventArgs e)
         {
-            
+
         }
     }
 }

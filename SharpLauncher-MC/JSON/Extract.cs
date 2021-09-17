@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharpLauncher_MC.JSON
 {
-    class Extract
+    public class Extract
     {
         public List<string> exclude;
     }

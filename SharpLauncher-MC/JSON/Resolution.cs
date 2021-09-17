@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace SharpLauncher_MC.JSON
 {
-    public class OS
+    public class Resolution
     {
-        public string name;
-        public string version;
-        public string arch;
+        public uint height;
+        public uint width;
     }
 }

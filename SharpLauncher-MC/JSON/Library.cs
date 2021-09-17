@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharpLauncher_MC.JSON
 {
-    class Library
+    public class Library
     {
         public Download downloads;
         public string name;

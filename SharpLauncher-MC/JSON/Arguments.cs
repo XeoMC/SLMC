@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace SharpLauncher_MC.JSON
 {
-    public class OS
+    public class Arguments
     {
-        public string name;
-        public string version;
-        public string arch;
+        public List<dynamic> game;
+        public List<dynamic> jvm;
     }
 }

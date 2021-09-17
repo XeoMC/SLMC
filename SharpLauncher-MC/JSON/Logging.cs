@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace SharpLauncher_MC.JSON
 {
-    class Logging
+    public class LoggingEntry
+    {
+        public Logging client;
+    }
+    public class Logging
     {
         public string argument;
         public File file;

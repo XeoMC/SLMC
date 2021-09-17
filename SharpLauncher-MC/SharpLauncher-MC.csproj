@@ -40,6 +40,9 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Costura, Version=5.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Costura.Fody.5.3.0\lib\netstandard1.0\Costura.dll</HintPath>
@@ -197,18 +200,23 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Config.cs" />
+    <Compile Include="JSON\Arguments.cs" />
+    <Compile Include="JSON\ClassicLauncher\ClassicLauncherProfilesList.cs" />
     <Compile Include="JSON\Classifiers.cs" />
     <Compile Include="JSON\Condition.cs" />
     <Compile Include="JSON\Download.cs" />
     <Compile Include="JSON\Extract.cs" />
     <Compile Include="JSON\File.cs" />
     <Compile Include="JSON\JavaVersion.cs" />
+    <Compile Include="JSON\ClassicLauncher\ClassicLauncherProfile.cs" />
     <Compile Include="JSON\Library.cs" />
     <Compile Include="JSON\Logging.cs" />
     <Compile Include="JSON\Natives.cs" />
     <Compile Include="JSON\OS.cs" />
     <Compile Include="JSON\Profile.cs" />
+    <Compile Include="JSON\Resolution.cs" />
     <Compile Include="JSON\Rule.cs" />
+    <Compile Include="JSON\ClassicLauncher\ClassicVersion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -301,6 +309,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="app.manifest" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -316,6 +325,7 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

@@ -19,7 +19,7 @@
             </Grid.ColumnDefinitions>
             <Image Margin="4,4" x:Name="img"/>
             <Path x:Name="uipath" Data="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:zButton}},Path=Path}" Fill="White" Stroke="White" StrokeThickness="1.5" SnapsToDevicePixels="true" HorizontalAlignment="Center" VerticalAlignment="Center" UseLayoutRounding="false"/>
-            <TextBlock Text="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:zButton}},Path=Text}" FontSize="{DynamicResource zFontSize}" FontFamily="{DynamicResource zFontFamily}" FontWeight="Thin"  Foreground="{DynamicResource zTextColor}" Grid.Column="1"  VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="tx"/>
+            <TextBlock Text="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:zButton}},Path=Text}" FontSize="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:zButton}},Path=FontSize}" FontFamily="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:zButton}},Path=FontFamily}" FontWeight="Thin"  Foreground="{DynamicResource zTextColor}" Grid.Column="1"  VerticalAlignment="Center" HorizontalAlignment="Center" x:Name="tx"/>
         </Grid>
         <Rectangle Fill="#ff000000" Opacity="0.01" x:Name="rect" Grid.ColumnSpan="1048576"/>
     </Grid>

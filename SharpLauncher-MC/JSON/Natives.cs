@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SharpLauncher_MC.JSON
 {
-    class Natives
+    public class Natives
     {
         public string linux;
         public string windows;
