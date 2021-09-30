@@ -3,7 +3,9 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SharpLauncher_MC.JSON
@@ -28,18 +30,25 @@ namespace SharpLauncher_MC.JSON
                 if (p.sharedSession) 
                 lSession = MainWindow.CurrentSession;
 
-                if(features.is_demo_user != null && features.is_demo_user == true) // IS DEMO
-                {
-                }
+                if(features.is_demo_user != true) // IS DEMO
+                    res = false;
 
-                if (p.resolution != null)
-                    res = true;
+                if (p.resolution == null)
+                    res = false;
             }
 
             if (os != null)
-                if(os.name != MainWindow.GetLauncherOSName()) // OS
+            {
+                if(!String.IsNullOrEmpty(os.name) && os.name != MainWindow.GetLauncherOSName()) // OS
                     res = false;
-            Console.WriteLine("Allowed: " + ((this.action == "allow") ? res : !res) + "\n" + JsonConvert.SerializeObject(this));
+                if (!String.IsNullOrEmpty(os.arch) && os.arch.ToUpper() != (RuntimeInformation.OSArchitecture.ToString() == "X64" ? "X86" : RuntimeInformation.OSArchitecture.ToString()).ToUpper()) // minecraft thinks x86 = x64
+                    res = false;
+                if (!String.IsNullOrEmpty(os.version) && !Regex.Match(Environment.OSVersion.Version.ToString(), os.version).Success) // not really sure how to check it
+                    res = false;
+            }
+#if DEBUG
+            Console.WriteLine($"Allowed: {((this.action == "allow") ? res : !res) + "\n" + JsonConvert.SerializeObject(this)}");
+#endif
 
             return (this.action == "allow") ? res : !res;
         }

@@ -97,31 +97,8 @@ namespace SharpLauncher_MC.JSON
                 t += $"{javaPath}";
             t += "/javaw.exe";
 
-            string args = $"\"{Path.GetFullPath(t)}\" ";
-
-            foreach (object obj in arguments.jvm)
-            {
-                if (obj is string)
-                {
-                    args += replaceArg((string)obj);
-                }
-                else
-                {
-                    Condition condition = JsonConvert.DeserializeObject<Condition>(JsonConvert.SerializeObject(obj));
-                    if (condition != null)
-                        if (condition.Result(this))
-                            if (condition.value is string conditionString)
-                                args += replaceArg(conditionString);
-                            else if (condition.value is string[] conditionStringArray)
-                                args += replaceArg(conditionStringArray);
-                            else
-                                Console.WriteLine("Something's wrong. Condition value is not a string or a string[]");
-                        else
-                            Console.WriteLine("Condition result is false");
-                    else
-                        Console.WriteLine($"Something's wrong. Argument is not a string or a condition:\n{JsonConvert.SerializeObject(obj)}");
-                }
-            }
+            string args = replaceArg(Path.GetFullPath(t));
+            args += toArgs(arguments.jvm);
             var classpath = "";
             List<Library> natives = new List<Library>();
             foreach(Library l in this.libraries)
@@ -149,11 +126,19 @@ namespace SharpLauncher_MC.JSON
             ExtractNatives(natives, nativesPath);
 
             if (this.addSharedJavaArgs)
-            args += $"{Config.i.javaArgs} ";
+                args += $"{Config.i.javaArgs} ";
+
             args += $"{javaArgs} ";
             args += this.logging.client.argument.Replace("${path}", $"{Path.GetFullPath($"{Config.i.minecraftPath}/assets/log_configs/{this.logging.client.file.id}")} {this.mainClass} ");
             this.logging.client.file.DownloadTask($"{Config.i.minecraftPath}/assets/log_configs/{this.logging.client.file.id}");
-            foreach (object obj in arguments.game)
+            args += toArgs(arguments.game);
+            return args;
+        }
+
+        private string toArgs(object[] list)
+        {
+            string args = "";
+            foreach (object obj in list)
             {
                 if (obj is string)
                 {
@@ -161,7 +146,7 @@ namespace SharpLauncher_MC.JSON
                 }
                 else
                 {
-                    Condition condition = JsonConvert.DeserializeObject<Condition>(JsonConvert.SerializeObject(obj));
+                    Condition condition = JsonConvert.DeserializeObject<Condition>(JsonConvert.SerializeObject(obj)); // really bad way to fix it...
                     if (condition != null)
                         if (condition.Result(this))
                             if (condition.value is string conditionString)
@@ -169,25 +154,31 @@ namespace SharpLauncher_MC.JSON
                             else if (condition.value is string[] conditionStringArray)
                                 args += replaceArg(conditionStringArray);
                             else
-                                Console.WriteLine("Something's wrong. Condition value is not a string or a string[]");
+                            {
+                                Console.WriteLine($"Something's wrong. Condition value is not a string or a string[]:\n{JsonConvert.SerializeObject(obj)}");
+                                args += replaceArg(JsonConvert.DeserializeObject<string[]>(JsonConvert.SerializeObject((object)condition.value)));
+                            }
                         else
-                            Console.WriteLine("Condition result is false");
+                            continue;
                     else
                         Console.WriteLine($"Something's wrong. Argument is not a string or a condition:\n{JsonConvert.SerializeObject(obj)}");
                 }
             }
             return args;
         }
-        public string replaceArg(string arg, Dictionary<string, string> additional = null)
+        private string replaceArg(string arg)
         {
-            return replaceArg(new string[]{ arg }, additional);
+            return replaceArg(new string[]{ arg });
         }
-        public string replaceArg(string[] args, Dictionary<string, string> additional = null)
+        private string replaceArg(string[] args)
         {
             string final = "";
             var lSession = this.sharedSession ? MainWindow.CurrentSession : this.session;
-            foreach (string s in args)
+            foreach (string sT in args)
             {
+                string s = sT;
+                if (sT.Contains(" ")) s = $"\"{sT}\"";
+
                 // GAME
                 string temp = s
 //                    .Replace(@"${auth_player_name}", lSession.Username)
@@ -199,17 +190,18 @@ namespace SharpLauncher_MC.JSON
 //                    .Replace(@"${auth_access_token}", lSession.AccessToken)
                     .Replace(@"${user_type}", "microsoft") // Temporary hardcoded, sorry!
                     .Replace(@"${version_type}", this.type)
+
                 // JVM
                     .Replace(@"${launcher_name}", Assembly.GetExecutingAssembly().GetName().Name)
                     .Replace(@"${launcher_version}", Assembly.GetExecutingAssembly().GetName().Version.ToString());
+
+                // ADDITIONAL
                 if(resolution != null)
                 {
-                    s.Replace(@"${resolution_width}", this.resolution.width.ToString())
-                     .Replace(@"${resolution_height}", this.resolution.height.ToString());
+                    temp = temp
+                        .Replace(@"${resolution_width}", this.resolution.width.ToString())
+                        .Replace(@"${resolution_height}", this.resolution.height.ToString());
                 }
-                if(additional != null)
-                    foreach (KeyValuePair<string, string> kvp in additional)
-                        s.Replace(kvp.Key, kvp.Value);
                 final += $"{temp} ";
             }
             return final;

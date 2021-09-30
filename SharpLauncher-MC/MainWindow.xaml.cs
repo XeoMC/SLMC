@@ -59,7 +59,7 @@ namespace SharpLauncher_MC
             usernameText.Text = "__tacoguy";
             /*
             Console.WriteLine(usernameText.Text);
-            PlayerUUID uid = Mojang.GetUUID(usernameText.Text).GetAwaiter().GetResult();
+            PlayerUUID uid = Mojang.GetUUID(usernameText.Text).GetAwaiter().GetResult(); // This API could be broken. Will need to investigate
             Console.WriteLine(uid.UUID);
             PlayerProfile p = Mojang.GetProfileUsingUUID(uid.UUID).GetAwaiter().GetResult();
 
@@ -78,6 +78,7 @@ namespace SharpLauncher_MC
 
             Skin.Source = bitmapimage;
             */
+#if DEBUG
             new Thread(() => {
                 while(true)
                 {
@@ -85,8 +86,9 @@ namespace SharpLauncher_MC
                     Thread.Sleep(TimeSpan.FromSeconds(60));
                 }
             }).Start();
-
-            Console.WriteLine(JsonConvert.SerializeObject(new JSON.Condition { rules = new JSON.Rule[] { new JSON.Rule { action = "allow", features = new JSON.Features { has_custom_resolution = true } } }, value = new string[] { "--width", "${resolution_width}", "--height", "${resolution_height}" } }, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
+            string text = File.ReadAllText($"{Config.i.minecraftPath}/versions/1.17.1/1.17.1.json");
+            p = JsonConvert.DeserializeObject<SharpLauncher_MC.JSON.ClassicLauncher.ClassicVersion>(text, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }).ToProfile();
+#endif
         }
         public bool settingsOpen = false;
         public void toggleSettings(bool? isOpen = null)
@@ -201,11 +203,15 @@ namespace SharpLauncher_MC
         {
             toggleSettings(false);
         }
-
+#if DEBUG
+        public JSON.Profile p;
+#endif
         private void Play_click(object sender, RoutedEventArgs e)
         {
-            string text = File.ReadAllText($"{Config.i.minecraftPath}/versions/1.17.1/1.17.1.json");
-            Console.WriteLine(JsonConvert.DeserializeObject<SharpLauncher_MC.JSON.ClassicLauncher.ClassicVersion>(text, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }).ToProfile().GetArguments());
+#if DEBUG
+            MessageBox.Show($"V: {Environment.OSVersion.Version.ToString()}");
+            MessageBox.Show(p.GetArguments().Replace(" -", "\n-").Replace(";", ";\n        "));
+#endif
         }
     }
 }
