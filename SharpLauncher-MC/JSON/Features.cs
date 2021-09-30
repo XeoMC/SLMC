@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SharpLauncher_MC.JSON
 {
-    public class Arguments
+    public class Features
     {
-        public object[] game;
-        public object[] jvm;
+        public bool? has_custom_resolution;
+        public bool? is_demo_user;
     }
 }

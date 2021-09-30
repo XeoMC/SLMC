@@ -8,15 +8,13 @@ namespace SharpLauncher_MC.JSON
 {
     public class Condition
     {
-        public List<Rule> rules;
+        public Rule[] rules;
         public object value;
         public bool Result(Profile p)
         {
             bool result = false;
             foreach (Rule r in this.rules)
-                if (r.Result(p))
-                    if (r.action == Action.allow) result = true;
-                    else if (r.action == Action.disallow) result = false;
+                result = r.isAllowed(p);
             return result;
         }
     }

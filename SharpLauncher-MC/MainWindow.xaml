@@ -19,32 +19,6 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <Grid x:Name="ProfilesWorkspace">
-                <xmc:zScrollViewer>
-                    <StackPanel>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                        <xmc:zSwitch Height="20"/>
-                    </StackPanel>
-                </xmc:zScrollViewer>
                 <TextBlock HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="4" FontSize="8" Text="With love from Russia &lt;3 " Foreground="{DynamicResource zBackgroundHighlight}"/>
             </Grid>
             <Grid Grid.Row="1" Background="{DynamicResource zBackgroundDeep}">

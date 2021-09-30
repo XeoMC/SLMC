@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SharpLauncher_MC.JSON.LauncherProfiles
+namespace SharpLauncher_MC.JSON.ClassicLauncher
 {
     public class ClassicLauncherProfile
     {
@@ -12,7 +12,7 @@ namespace SharpLauncher_MC.JSON.LauncherProfiles
         public string javaDir;
         public string javaArgs;
         public string icon;
-        public string lastUsed; // not going to use it, too lazy...
+        public string lastUsed;
         public string lastVersionId;
         public string name;
         public Resolution resolution;

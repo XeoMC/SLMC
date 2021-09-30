@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SharpLauncher_MC.JSON.LauncherProfiles
+namespace SharpLauncher_MC.JSON.ClassicLauncher
 {
     public class ClassicLauncherProfilesList
     {

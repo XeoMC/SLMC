@@ -1,21 +1,24 @@
 ﻿using MojangAPI.Model;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SharpLauncher_MC.JSON
+namespace SharpLauncher_MC.JSON.ClassicLauncher
 {
     public class ClassicVersion
     {
         // MC Version
-        public List<List<object>> arguments;
+        public Arguments arguments;
         public File assetIndex;
         public string assets;
         public uint complianceLevel;
-        public List<File> downloads;
+        public VersionDownloads downloads;
         public string id;
+        //java version
         public List<Library> libraries;
         public LoggingEntry logging;
         public string mainClass;
@@ -37,17 +40,18 @@ namespace SharpLauncher_MC.JSON
             bool sharedSession = true,
             Session session = null)
         {
-            var p = (Profile)this;
-            p.name = name;
-            p.icon = icon;
-            p.javaPath = javaPath;
-            p.sharedAssets = sharedAssets;
-            p.assetsPath = assetsPath;
-            p.addSharedJavaArgs = addSharedJavaArgs;
-            p.javaArgs = javaArgs;
-            p.sharedSession = sharedSession;
-            p.session = session;
-            return p;
+            Profile profile = JsonConvert.DeserializeObject<Profile>(JsonConvert.SerializeObject(this));
+
+            profile.name = name;
+            profile.icon = icon;
+            profile.javaPath = javaPath;
+            profile.sharedAssets = sharedAssets;
+            profile.assetsPath = assetsPath;
+            profile.addSharedJavaArgs = addSharedJavaArgs;
+            profile.javaArgs = javaArgs;
+            profile.sharedSession = sharedSession;
+            profile.session = session;
+            return profile;
         }
     }
 }

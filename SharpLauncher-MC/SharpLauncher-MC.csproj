@@ -200,12 +200,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Config.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="JSON\Arguments.cs" />
     <Compile Include="JSON\ClassicLauncher\ClassicLauncherProfilesList.cs" />
     <Compile Include="JSON\Classifiers.cs" />
     <Compile Include="JSON\Condition.cs" />
     <Compile Include="JSON\Download.cs" />
     <Compile Include="JSON\Extract.cs" />
+    <Compile Include="JSON\Features.cs" />
     <Compile Include="JSON\File.cs" />
     <Compile Include="JSON\JavaVersion.cs" />
     <Compile Include="JSON\ClassicLauncher\ClassicLauncherProfile.cs" />
@@ -214,6 +216,7 @@
     <Compile Include="JSON\Natives.cs" />
     <Compile Include="JSON\OS.cs" />
     <Compile Include="JSON\Profile.cs" />
+    <Compile Include="JSON\VersionDownloads.cs" />
     <Compile Include="JSON\Resolution.cs" />
     <Compile Include="JSON\Rule.cs" />
     <Compile Include="JSON\ClassicLauncher\ClassicVersion.cs" />

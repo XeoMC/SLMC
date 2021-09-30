@@ -38,7 +38,7 @@ namespace SharpLauncher_MC
         public static WebClient WebClient = new WebClient();
         public static Mojang Mojang = new Mojang(HttpClient);
         public static Session CurrentSession;
-        public static string getLauncherOSName()
+        public static string GetLauncherOSName()
         {
             return "windows"; // because of wpf
         }
@@ -46,8 +46,16 @@ namespace SharpLauncher_MC
         {
             InitializeComponent();
             this.Title = $"SLMC, build {Assembly.GetExecutingAssembly().GetName().Version.Revision}";
+
             Config.i = new Config();
-            
+            if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/.SLMC/SLMC.json"))
+                Config.Load();
+            else
+            {
+                Config.i = new Config();
+                Config.Save();
+            }
+
             usernameText.Text = "__tacoguy";
             /*
             Console.WriteLine(usernameText.Text);
@@ -77,6 +85,8 @@ namespace SharpLauncher_MC
                     Thread.Sleep(TimeSpan.FromSeconds(60));
                 }
             }).Start();
+
+            Console.WriteLine(JsonConvert.SerializeObject(new JSON.Condition { rules = new JSON.Rule[] { new JSON.Rule { action = "allow", features = new JSON.Features { has_custom_resolution = true } } }, value = new string[] { "--width", "${resolution_width}", "--height", "${resolution_height}" } }, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
         }
         public bool settingsOpen = false;
         public void toggleSettings(bool? isOpen = null)
@@ -194,7 +204,8 @@ namespace SharpLauncher_MC
 
         private void Play_click(object sender, RoutedEventArgs e)
         {
-
+            string text = File.ReadAllText($"{Config.i.minecraftPath}/versions/1.17.1/1.17.1.json");
+            Console.WriteLine(JsonConvert.DeserializeObject<SharpLauncher_MC.JSON.ClassicLauncher.ClassicVersion>(text, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }).ToProfile().GetArguments());
         }
     }
 }
