@@ -24,7 +24,7 @@
             0
         </CornerRadius>
         <FontFamily x:Key="zFontFamily">
-            hooge 05_55 Cyr2
+            pack://application:,,,/Fonts/#hooge 05_55 Cyr2
         </FontFamily>
         <sys:Double x:Key="zFontSize">
             16
