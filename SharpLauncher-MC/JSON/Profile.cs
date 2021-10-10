@@ -156,7 +156,7 @@ namespace SharpLauncher_MC.JSON
                             else
                             {
                                 Console.WriteLine($"Something's wrong. Condition value is not a string or a string[]:\n{JsonConvert.SerializeObject(obj)}");
-                                args += replaceArg(JsonConvert.DeserializeObject<string[]>(JsonConvert.SerializeObject((object)condition.value)));
+                                args += replaceArg(JsonConvert.DeserializeObject<string[]>(JsonConvert.SerializeObject((object)condition.value))); // help wanted, i'm dumb(?)
                             }
                         else
                             continue;
