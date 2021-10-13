@@ -150,26 +150,19 @@ namespace SharpLauncher_MC.JSON
                     Condition condition = (obj as JObject).ToObject<Condition>();
                     if (condition != null)
                         if (condition.Result(this))
-                            if (condition.value is string conditionString)
-                                args += replaceArg(conditionString);
-                            else if (condition.value is string[] conditionStringArray)
-                                args += replaceArg(conditionStringArray);
-                            else if (condition.value is JObject conditionJObject)
-                            {
-                                if(conditionJObject.ToString().Contains("["))
-                                    args += replaceArg(conditionJObject.ToObject<string[]>());
-                                else
-                                    args += replaceArg(conditionJObject.ToString());
-                            }
+                            if (condition.value is JArray conditionArray)
+                                args += replaceArg(conditionArray.ToObject<string[]>());
                             else
                             {
-                                Console.WriteLine($"Something's wrong. Condition value is not a string or a string[]:\n{JsonConvert.SerializeObject(obj)}\nBut it's {obj.GetType()}");
-                                args += replaceArg(JsonConvert.DeserializeObject<string[]>(JsonConvert.SerializeObject((object)condition.value))); // help wanted
+                                if (condition.value is string conditionString) // idk how to check if it's string or other object correctly
+                                    args += replaceArg(conditionString);
+                                else
+                                    Console.WriteLine($"Condition value is undefined:\n{JsonConvert.SerializeObject(obj)}");
                             }
                         else
                             continue;
                     else
-                        Console.WriteLine($"Something's wrong. Argument is not a string or a condition:\n{JsonConvert.SerializeObject(obj)}");
+                        Console.WriteLine($"Argument is not a string or a condition:\n{JsonConvert.SerializeObject(obj)}");
                 }
             }
             return args;
