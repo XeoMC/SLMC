@@ -154,7 +154,7 @@ namespace SharpLauncher_MC.JSON
                                 args += replaceArg(conditionArray.ToObject<string[]>());
                             else
                             {
-                                if (condition.value is string conditionString) // idk how to check if it's string or other object correctly
+                                if (condition.value is string conditionString)
                                     args += replaceArg(conditionString);
                                 else
                                     Console.WriteLine($"Condition value is undefined:\n{JsonConvert.SerializeObject(obj)}");
