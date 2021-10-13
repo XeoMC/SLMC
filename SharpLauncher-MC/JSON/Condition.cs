@@ -9,7 +9,7 @@ namespace SharpLauncher_MC.JSON
     public class Condition
     {
         public Rule[] rules;
-        public dynamic value;
+        public object value;
         public bool Result(Profile p)
         {
             bool result = false;

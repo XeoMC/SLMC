@@ -1,5 +1,6 @@
 ﻿using MojangAPI.Model;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SharpLauncher_MC.JSON.ClassicLauncher;
 using System;
 using System.Collections.Generic;
@@ -146,17 +147,24 @@ namespace SharpLauncher_MC.JSON
                 }
                 else
                 {
-                    Condition condition = JsonConvert.DeserializeObject<Condition>(JsonConvert.SerializeObject(obj)); // really bad way to fix it...
+                    Condition condition = (obj as JObject).ToObject<Condition>();
                     if (condition != null)
                         if (condition.Result(this))
                             if (condition.value is string conditionString)
                                 args += replaceArg(conditionString);
                             else if (condition.value is string[] conditionStringArray)
                                 args += replaceArg(conditionStringArray);
+                            else if (condition.value is JObject conditionJObject)
+                            {
+                                if(conditionJObject.ToString().Contains("["))
+                                    args += replaceArg(conditionJObject.ToObject<string[]>());
+                                else
+                                    args += replaceArg(conditionJObject.ToString());
+                            }
                             else
                             {
-                                Console.WriteLine($"Something's wrong. Condition value is not a string or a string[]:\n{JsonConvert.SerializeObject(obj)}");
-                                args += replaceArg(JsonConvert.DeserializeObject<string[]>(JsonConvert.SerializeObject((object)condition.value))); // help wanted, i'm dumb(?)
+                                Console.WriteLine($"Something's wrong. Condition value is not a string or a string[]:\n{JsonConvert.SerializeObject(obj)}\nBut it's {obj.GetType()}");
+                                args += replaceArg(JsonConvert.DeserializeObject<string[]>(JsonConvert.SerializeObject((object)condition.value))); // help wanted
                             }
                         else
                             continue;
