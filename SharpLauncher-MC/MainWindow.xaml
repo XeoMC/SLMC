@@ -19,7 +19,7 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
             <Grid x:Name="ProfilesWorkspace">
-                <TextBlock HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="4" FontSize="8" Text="With love from Russia &lt;3 " Foreground="{DynamicResource zBackgroundHighlight}"/>
+                <TextBlock x:Name="heart" Visibility="Hidden" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="4" FontSize="8" Text="With love from Russia &lt;3 " Foreground="{DynamicResource zBackgroundHighlight}"/>
             </Grid>
             <Grid Grid.Row="1" Background="{DynamicResource zBackgroundDeep}">
                 <Grid.RowDefinitions>
@@ -36,11 +36,11 @@
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock x:Name="settingsText" Text="settings" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="7" Foreground="{DynamicResource zBackgroundLightHighlight}"/>
-                <Image Grid.Column="2" x:Name="Skin"/>
+                <Image Grid.Column="2" x:Name="Skin" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
                 <TextBlock Grid.Column="3" x:Name="usernameText" Text="username" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="7"/>
             </Grid>
         </Grid>
-        <Border x:Name="OverlaySettings" Background="Black" BorderThickness="0" Opacity="0" Visibility="Hidden" MouseUp="Overlay_MouseUp" />
+        <Border x:Name="Overlay" Background="Black" BorderThickness="0" Opacity="0" Visibility="Hidden" MouseUp="Overlay_MouseUp" />
 
         <Grid Background="{DynamicResource zBackgroundDeep}"  
               x:Name="Settings" HorizontalAlignment="Left" MaxWidth="480" Margin="-280, 0, 280, 0" Visibility="Hidden"
@@ -57,7 +57,7 @@
             <TextBlock FontSize="8" HorizontalAlignment="Right" VerticalAlignment="Bottom" TextAlignment="Right" Margin="3, 2" Foreground="{DynamicResource zBackgroundLightHighlight}">                    
                     <TextBlock x:Name="ModeText" Text="offline mode"/><LineBreak/>
                     <TextBlock x:Name="VersionText" Text="SharpLauncher_MC v0.0.0.0"/><LineBreak/>
-                    <Hyperlink NavigateUri="https://github.com/XeoMC/SLMC">https://github.com/XeoMC/SLMC</Hyperlink>
+                    <Hyperlink NavigateUri="https://github.com/XeoMC/SLMC" Click="Hyperlink_Click">https://github.com/XeoMC/SLMC</Hyperlink>
                 </TextBlock>
         </Grid>
         <Grid Background="{DynamicResource zBackgroundDeep}"
@@ -65,8 +65,28 @@
               Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type FrameworkElement}}}">
 
         </Grid>
-        <Grid x:Name="Login">
-            
+        <Grid Background="{DynamicResource zBackground}" Visibility="Visible"
+              x:Name="Login" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+              Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type FrameworkElement}}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.45*"/>
+                <RowDefinition Height="0.7*"/>
+                <RowDefinition Height="0.25*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" FontSize="48" Text="Login" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextAlignment="Center" Foreground="{DynamicResource zTextColor}"/>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.15*"/>
+                    <ColumnDefinition Width="0.75*"/>
+                    <ColumnDefinition Width="0.15*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch">
+                    <xmc:zEdit Height="28" MaxWidth="240" Margin="0, 4" Placeholder="Username" x:Name="loginUsername"/>
+                    <xmc:zEdit Height="28" MaxWidth="240" Margin="0, 4, 0, 0" Placeholder="Password" x:Name="loginPassword" IsPass="True"/>
+                    <xmc:zSwitch Text="Show password" Margin="0, 12" HorizontalAlignment="Center" click="showPass" x:Name="loginShowPass"/>
+                    <xmc:zButton Height="32" MaxWidth="280" Text="Let's go!" click="Login_Click"/>
+                </StackPanel>
+            </Grid>
         </Grid>
         <Grid x:Name="Warning">
             

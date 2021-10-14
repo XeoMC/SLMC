@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -40,11 +41,12 @@ namespace SharpLauncher_MC
         public static Session CurrentSession;
         public static string GetLauncherOSName()
         {
-            return "windows"; // because of wpf
+            return "windows"; // because of wpf and dotnet framework
         }
         public MainWindow()
         {
             InitializeComponent();
+            VersionText.Text = $"{Assembly.GetExecutingAssembly().GetName().Name} v{Assembly.GetExecutingAssembly().GetName().Version}";
             this.Title = $"SLMC, build {Assembly.GetExecutingAssembly().GetName().Version.Revision}";
 
             Config.i = new Config();
@@ -55,29 +57,7 @@ namespace SharpLauncher_MC
                 Config.i = new Config();
                 Config.Save();
             }
-
-            usernameText.Text = "__tacoguy";
-            /*
-            Console.WriteLine(usernameText.Text);
-            PlayerUUID uid = Mojang.GetUUID(usernameText.Text).GetAwaiter().GetResult(); // This API could be broken. Will need to investigate
-            Console.WriteLine(uid.UUID);
-            PlayerProfile p = Mojang.GetProfileUsingUUID(uid.UUID).GetAwaiter().GetResult();
-
-            MemoryStream skinData = new MemoryStream(WebClient.DownloadData(new Uri(p.Skin.Url)));
-            Bitmap skin = new Bitmap(skinData);
-            skin = skin.Clone(new System.Drawing.Rectangle(8, 8, 8, 8), skin.PixelFormat);
-
-            skinData = new MemoryStream();
-            skin.Save(skinData, System.Drawing.Imaging.ImageFormat.Bmp);
-            skinData.Position = 0;
-            BitmapImage bitmapimage = new BitmapImage();
-            bitmapimage.BeginInit();
-            bitmapimage.StreamSource = skinData;
-            bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
-            bitmapimage.EndInit();
-
-            Skin.Source = bitmapimage;
-            */
+            updateSkin();
 #if DEBUG
             new Thread(() => {
                 while(true)
@@ -90,36 +70,63 @@ namespace SharpLauncher_MC
             p = JsonConvert.DeserializeObject<SharpLauncher_MC.JSON.ClassicLauncher.ClassicVersion>(text, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }).ToProfile();
 #endif
         }
-        public bool settingsOpen = false;
-        public void toggleSettings(bool? isOpen = null)
+        public void updateSkin()
         {
-            bool iO = true;
-            if (isOpen == null) iO = !settingsOpen;
-            else iO = (bool)isOpen;
-            settingsOpen = iO;
+            Dispatcher.Invoke(async () =>
+            {
+                if (CurrentSession == null) return;
+                usernameText.Text = CurrentSession.Username;
+                PlayerUUID uid = await Mojang.GetUUID(usernameText.Text);
+                PlayerProfile p = await Mojang.GetProfileUsingUUID(uid.UUID);
+
+                MemoryStream skinData = new MemoryStream(WebClient.DownloadData(new Uri(p.Skin.Url)));
+                Console.WriteLine(p.Skin.Url);
+                Bitmap skin = new Bitmap(skinData);
+                skin = skin.Clone(new System.Drawing.Rectangle(8, 8, 8, 8), skin.PixelFormat);
+
+                skinData = new MemoryStream();
+                skin.Save(skinData, System.Drawing.Imaging.ImageFormat.Bmp);
+                skinData.Position = 0;
+                BitmapImage bitmapimage = new BitmapImage();
+                bitmapimage.BeginInit();
+                bitmapimage.StreamSource = skinData;
+                bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapimage.EndInit();
+                Skin.Source = bitmapimage;
+            });
+        }
+        public bool settingsOpen = false;
+        public bool loginScreenOpen = true;
+        public bool profileConfigOpen = false;
+        public void toggleLogin(bool? isOpen = null) => toggleForm(Login, ref loginScreenOpen, isOpen);
+        public void toggleSettings(bool? isOpen = null) => toggleForm(Settings, ref settingsOpen, isOpen);
+        public void toggleForm(Grid form, ref bool stateProperty, bool? isOpen = null)
+        {
+            bool iO = !stateProperty;
+            if (isOpen != null) iO = (bool)isOpen;
+            stateProperty = iO;
             if (iO)
             {
-                Settings.Visibility = Visibility.Visible;
-                OverlaySettings.Visibility = Visibility.Visible;
+                form.Visibility = Visibility.Visible;
+                Overlay.Visibility = Visibility.Visible;
                 ThicknessAnimation a = new ThicknessAnimation { To = new Thickness(0), Duration = zGlobals.animationSpeed, DecelerationRatio = 1 };
                 DoubleAnimation a1 = new DoubleAnimation { To = 0.25, Duration = zGlobals.animationSpeed };
-                Settings.BeginAnimation(MarginProperty, a);
-                OverlaySettings.BeginAnimation(OpacityProperty, a1);
+                form.BeginAnimation(MarginProperty, a);
+                Overlay.BeginAnimation(OpacityProperty, a1);
             }
             else
             {
                 ThicknessAnimation a = new ThicknessAnimation { To = new Thickness(-Settings.ActualWidth, 0, Settings.ActualWidth, 0), Duration = zGlobals.animationSpeed, AccelerationRatio = 1 };
                 a.Completed += (s, e) =>
                 {
-                    Settings.Visibility = Visibility.Hidden;
-                    OverlaySettings.Visibility = Visibility.Hidden;
+                    form.Visibility = Visibility.Hidden;
+                    Overlay.Visibility = Visibility.Hidden;
                 };
                 DoubleAnimation a1 = new DoubleAnimation { To = 0, Duration = zGlobals.animationSpeed };
-                Settings.BeginAnimation(MarginProperty, a);
-                OverlaySettings.BeginAnimation(OpacityProperty, a1);
+                form.BeginAnimation(MarginProperty, a);
+                Overlay.BeginAnimation(OpacityProperty, a1);
             }
         }
-        public bool profileConfigOpen = false;
         public void toggleProfileConfig(bool? isOpen = null)
         {
             bool iO = true;
@@ -145,12 +152,11 @@ namespace SharpLauncher_MC
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if(true)
-            {
-                e.Cancel = true;
-                toggleSettings();
-//                toggleProfileConfig();
-            }
+#if DEBUG
+            e.Cancel = true;
+            toggleSettings();
+//            toggleProfileConfig();
+#endif
         }
 
         protected bool winSizeFix = false;
@@ -212,6 +218,15 @@ namespace SharpLauncher_MC
             MessageBox.Show($"V: {Environment.OSVersion.Version.ToString()}");
             MessageBox.Show(p.GetArguments().Replace(" -", "\n-").Replace(";", ";\n        "));
 #endif
+        }
+
+        private void showPass(object sender, RoutedEventArgs e) => loginPassword.IsPass = !loginPassword.IsPass;
+
+        private void Hyperlink_Click(object sender, RoutedEventArgs e) => Process.Start(((Hyperlink)sender).NavigateUri.AbsoluteUri);
+
+        private void Login_Click(object sender, RoutedEventArgs e)
+        {
+            toggleLogin();
         }
     }
 }

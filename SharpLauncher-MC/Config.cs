@@ -29,6 +29,7 @@ namespace SharpLauncher_MC
         {
             if (!Directory.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/.SLMC"))
                 Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/.SLMC");
+            if (Config.i == null) Config.i = new Config();
             File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/.SLMC/SLMC.json", JsonConvert.SerializeObject(Config.i));
         }
         public static void Load()
@@ -37,6 +38,8 @@ namespace SharpLauncher_MC
                 Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/.SLMC");
             if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/.SLMC/SLMC.json"))
                 Config.i = JsonConvert.DeserializeObject<Config>(File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/.SLMC/SLMC.json"));
+            else 
+                Config.Save();
         }
     }
 }
