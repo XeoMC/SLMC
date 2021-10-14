@@ -224,9 +224,19 @@ namespace SharpLauncher_MC
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e) => Process.Start(((Hyperlink)sender).NavigateUri.AbsoluteUri);
 
-        private void Login_Click(object sender, RoutedEventArgs e)
+        private async void Login_Click(object sender, RoutedEventArgs e)
         {
-            toggleLogin();
+            MojangAuth auth = new MojangAuth(HttpClient);
+            MojangAuthResponse res = await auth.Authenticate(loginUsername.Text, loginPassword.Text);
+            if (res.IsSuccess)
+            {
+                CurrentSession = res.Session;
+                toggleLogin();
+            }
+            else
+            {
+                loginMessage.Text = "Wrong authorization data.";
+            }
         }
     }
 }
