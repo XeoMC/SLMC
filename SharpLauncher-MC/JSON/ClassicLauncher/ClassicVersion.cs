@@ -45,8 +45,7 @@ namespace SharpLauncher_MC.JSON.ClassicLauncher
             profile.name = name;
             profile.icon = icon;
             profile.javaPath = javaPath;
-            profile.sharedAssets = sharedAssets;
-            profile.assetsPath = assetsPath;
+            profile.profileAssets = false;
             profile.addSharedJavaArgs = addSharedJavaArgs;
             profile.javaArgs = javaArgs;
             profile.sharedSession = sharedSession;

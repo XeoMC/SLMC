@@ -7,19 +7,20 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace SharpLauncher_MC.JSON
 {
     public class Profile : ClassicVersion
     {
         // SLMC Profile
-        public string name = "";
+        public string name = "Example";
         public string icon = "Grass";
-        public string assetsPath;
-        public bool sharedAssets = true;
+        public bool profileAssets;
         public Session session;
         public bool sharedSession = true;
         public string javaArgs = "";
@@ -35,7 +36,24 @@ namespace SharpLauncher_MC.JSON
         }
         [JsonIgnore]
         public List<Task> LibraryTasks = new List<Task>();
-
+        public void DownloadAssets()
+        {
+            var assetsPath = this.profileAssets ? $"{Config.i.minecraftPath}/profiles/{this.name}/assets" : $"{Config.i.minecraftPath}/assets";
+            var assets = JsonConvert.DeserializeObject<AssetIndex>(assetIndex.DownloadString());
+            foreach(KeyValuePair<string, AssetIndexObject> kvp in assets.objects)
+            {
+                string filePath = Path.GetFullPath($"{assetsPath}/{kvp.Value.hash.Substring(0, 2)}/{kvp.Value.hash}");
+                if (System.IO.File.Exists(filePath)) continue; // temp, need to check hash
+                using (var client = new WebClient())
+                {
+                    new FileInfo(filePath).Directory.Create();
+                    client.DownloadFile(new Uri($"http://resources.download.minecraft.net/{kvp.Value.hash.Substring(0, 2)}/{kvp.Value.hash}"), filePath);
+#if DEBUG
+                    Console.WriteLine(filePath + " downloaded");
+#endif
+                }
+            }
+        }
         public async void ExtractNatives(List<Library> libraries, string nativesPath)
         {
             foreach(Library l in libraries)
@@ -44,9 +62,12 @@ namespace SharpLauncher_MC.JSON
                 if (l.natives.windows == osN)
                 {
                     var saveLocation = $"{Config.i.minecraftPath}/libraries/{l.downloads.classifiers.natives_windows.path}";
-                    await Task.WhenAll(l.downloads.classifiers.natives_windows.DownloadTask(saveLocation)); // now extract
+                    Task dlTask = l.downloads.classifiers.natives_windows.DownloadTask(saveLocation);
+                    LibraryTasks.Add(dlTask);
+                    await Task.WhenAll(dlTask); // now extract
                     Task t = new Task(() =>
                     {
+                        Console.WriteLine($"Extracting {l.downloads.classifiers.natives_windows.path}");
                         if( String.IsNullOrEmpty(Config.i.externalUnpacker))
                         {
                             throw new NotImplementedException("Please, use external unpacker parameter for now.");
@@ -56,18 +77,22 @@ namespace SharpLauncher_MC.JSON
                             {
                                 StartInfo = new ProcessStartInfo
                                 {
-                                    FileName = Config.i.externalUnpacker
+                                    FileName = Path.GetFullPath(Config.i.externalUnpacker),
+                                    Arguments = Config.i.externalUnpackerArgs
                                         .Replace(@"${file}", saveLocation)
                                         .Replace(@"${path}", nativesPath)
                                 }
                             };
-//                            process.Start();
-//                            process.WaitForExit();
+#if DEBUG
+                            process.OutputDataReceived += (s, e) =>
+                            {
+                                Console.WriteLine("UNPACKER: " + e.Data);
+                            };
+#endif
+                            new DirectoryInfo(nativesPath).Create();
+                            Console.WriteLine($"Started unpacker: {process.Start()}");
+                            process.WaitForExit();
                         }
-                    });
-                    await t.ContinueWith((a) =>
-                    {
-                        LibraryTasks.Remove(t);
                     });
                     LibraryTasks.Add(t);
                     t.Start();
@@ -84,12 +109,21 @@ namespace SharpLauncher_MC.JSON
                 }
             }
         }
-        public async void Start()
+        public void Start(bool logger = true)
         {
-            var cli = GetArguments();
-            await Task.WhenAll(LibraryTasks);
+            new Task(async () =>
+            {
+                var args = GetArguments();
+                DownloadAssets();
+                await Task.WhenAll(LibraryTasks);
+                Console.WriteLine($"{GetJavaExecutable()}{args}");
+                MessageBox.Show($"{GetJavaExecutable()}\n{args.Replace(" -", "\n-").Replace(";", ";\n        ")}");
+                LibraryTasks.ForEach(t => t.Dispose());
+                LibraryTasks.Clear();
+//                MainWindow.StartWithLogger(GetJavaExecutable().Replace("\"", ""), args, "");
+            }).Start();
         }
-        public string GetArguments()
+        public string GetJavaExecutable()
         {
             string t = "";
             if (this.javaPath == "")
@@ -98,8 +132,11 @@ namespace SharpLauncher_MC.JSON
                 t += $"{javaPath}";
             t += "/javaw.exe";
 
-            string args = replaceArg(Path.GetFullPath(t));
-            args += toArgs(arguments.jvm);
+            return replaceArg(Path.GetFullPath(t));
+        }
+        public string GetArguments()
+        {
+            string args = toArgs(arguments.jvm);
             var classpath = "";
             List<Library> natives = new List<Library>();
             foreach(Library l in this.libraries)
@@ -114,7 +151,7 @@ namespace SharpLauncher_MC.JSON
                     string path = Path.GetFullPath($"{Config.i.minecraftPath}/libraries/{l.downloads.artifact.path}");
                     if(!classpath.Contains(path))
                     {
-                        l.downloads.artifact.DownloadTask(path);
+                        LibraryTasks.Add(l.downloads.artifact.DownloadTask(path));
                         classpath += $"{path};";
                     }
                     if(l.natives != null)
@@ -122,6 +159,7 @@ namespace SharpLauncher_MC.JSON
                 }
             }
             classpath += $"{Path.GetFullPath($"{Config.i.minecraftPath}/versions/{this.id}/{this.id}.jar")} ";
+            LibraryTasks.Add(this.downloads.client.DownloadTask($"{Config.i.minecraftPath}/versions/{this.id}/{this.id}.jar"));
             var nativesPath = Path.GetFullPath($"{Config.i.minecraftPath}/natives/{this.id}");
             args = args.Replace("${classpath}", classpath).Replace("${natives_directory}", nativesPath);
             ExtractNatives(natives, nativesPath);
@@ -133,6 +171,7 @@ namespace SharpLauncher_MC.JSON
             args += this.logging.client.argument.Replace("${path}", $"{Path.GetFullPath($"{Config.i.minecraftPath}/assets/log_configs/{this.logging.client.file.id}")} {this.mainClass} ");
             this.logging.client.file.DownloadTask($"{Config.i.minecraftPath}/assets/log_configs/{this.logging.client.file.id}");
             args += toArgs(arguments.game);
+            new DirectoryInfo(Path.GetFullPath($"{Config.i.minecraftPath}/profiles/{this.name}")).Create();
             return args;
         }
 
@@ -178,18 +217,23 @@ namespace SharpLauncher_MC.JSON
             foreach (string sT in args)
             {
                 string s = sT;
-                if (sT.Contains(" ")) s = $"\"{sT}\"";
+                if (s.Contains(" ")) s = $"\"{s}\"";
+
+                if (lSession != null)
+                {
+                    s = s
+                        .Replace(@"${auth_player_name}", lSession.Username)
+                        .Replace(@"${auth_uuid}", lSession.UUID)
+                        .Replace(@"${auth_access_token}", lSession.AccessToken)
+                        .Replace(@"${user_type}", "mojang"); // Temporary hardcoded, sorry!
+                }
 
                 // GAME
-                string temp = s
-//                    .Replace(@"${auth_player_name}", lSession.Username)
+                s = s
                     .Replace(@"${version_name}", this.id)
-                    .Replace(@"${game_directory}", Path.GetFullPath($"{Config.i.minecraftPath}/{this.name}"))
-                    .Replace(@"${assets_root}", this.sharedAssets ? Path.GetFullPath($"{Config.i.minecraftPath}/assets") : Path.GetFullPath(this.assetsPath))
+                    .Replace(@"${game_directory}", Path.GetFullPath($"{Config.i.minecraftPath}/profiles/{this.name}"))
+                    .Replace(@"${assets_root}", this.profileAssets ? Path.GetFullPath($"{Config.i.minecraftPath}/profiles/{this.name}/assets") : Path.GetFullPath($"{Config.i.minecraftPath}/assets"))
                     .Replace(@"${assets_index_name}", this.assetIndex.id)
-//                    .Replace(@"${auth_uuid}", lSession.UUID)
-//                    .Replace(@"${auth_access_token}", lSession.AccessToken)
-                    .Replace(@"${user_type}", "microsoft") // Temporary hardcoded, sorry!
                     .Replace(@"${version_type}", this.type)
 
                 // JVM
@@ -199,11 +243,11 @@ namespace SharpLauncher_MC.JSON
                 // ADDITIONAL
                 if(resolution != null)
                 {
-                    temp = temp
+                    s = s
                         .Replace(@"${resolution_width}", this.resolution.width.ToString())
                         .Replace(@"${resolution_height}", this.resolution.height.ToString());
                 }
-                final += $"{temp} ";
+                final += $"{s} ";
             }
             return final;
         }

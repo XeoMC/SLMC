@@ -47,7 +47,7 @@ namespace SharpLauncher_MC.JSON
                     res = false;
             }
 #if DEBUG
-            Console.WriteLine($"Allowed: {((this.action == "allow") ? res : !res) + "\n" + JsonConvert.SerializeObject(this)}");
+//            Console.WriteLine($"Allowed: {((this.action == "allow") ? res : !res) + "\n" + JsonConvert.SerializeObject(this)}");
 #endif
 
             return (this.action == "allow") ? res : !res;

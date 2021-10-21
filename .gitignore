@@ -11,12 +11,17 @@ gitinformation.txt
 *.user
 *.userosscache
 *.sln.docstates
+XboxAuth.cs
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
 # Mono auto generated files
 mono_crash.*
+
+# Compiled stuff
+*.exe
+*.dll
 
 # Build results
 [Dd]ebug/

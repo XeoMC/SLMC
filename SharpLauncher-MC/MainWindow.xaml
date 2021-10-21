@@ -80,8 +80,8 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch">
                     <TextBlock Grid.Row="0" FontSize="48" Text="Login" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextAlignment="Center" Margin="0, 24" Foreground="{DynamicResource zTextColor}"/>
-                    <xmc:zEdit Height="28" MaxWidth="240" Margin="0, 4" Placeholder="Username" x:Name="loginUsername"/>
-                    <xmc:zEdit Height="28" MaxWidth="240" Margin="0, 4, 0, 0" Placeholder="Password" x:Name="loginPassword" IsPass="True"/>
+                    <xmc:zEdit Height="28" MaxWidth="240" Margin="0, 4" Placeholder="Username" x:Name="loginUsername" ReturnPressed="loginUsername_ReturnPressed"/>
+                    <xmc:zEdit Height="28" MaxWidth="240" Margin="0, 4, 0, 0" Placeholder="Password" x:Name="loginPassword" IsPass="True" ReturnPressed="loginPassword_ReturnPressed"/>
                     <xmc:zSwitch Text="Show password" Margin="0, 12" HorizontalAlignment="Center" click="showPass" x:Name="loginShowPass"/>
                     <xmc:zButton Height="32" MaxWidth="280" Text="Let's go!" click="Login_Click"/>
                 </StackPanel>

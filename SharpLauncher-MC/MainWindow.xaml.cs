@@ -38,11 +38,14 @@ namespace SharpLauncher_MC
         public static HttpClient HttpClient = new HttpClient();
         public static WebClient WebClient = new WebClient();
         public static Mojang Mojang = new Mojang(HttpClient);
+        public static MojangAuth MojangAuth = new MojangAuth(HttpClient);
         public static Session CurrentSession;
         public static string GetLauncherOSName()
         {
             return "windows"; // because of wpf and dotnet framework
         }
+        [DllImport("Libraries\\STDOuter.dll")]
+        public static extern void StartWithLogger(string prc, string arg, string workDir);
         public MainWindow()
         {
             InitializeComponent();
@@ -57,7 +60,6 @@ namespace SharpLauncher_MC
                 Config.i = new Config();
                 Config.Save();
             }
-            updateSkin();
 #if DEBUG
             new Thread(() => {
                 while(true)
@@ -70,30 +72,26 @@ namespace SharpLauncher_MC
             p = JsonConvert.DeserializeObject<SharpLauncher_MC.JSON.ClassicLauncher.ClassicVersion>(text, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }).ToProfile();
 #endif
         }
-        public void updateSkin()
+        public async Task updateSkin()
         {
-            Dispatcher.Invoke(async () =>
-            {
-                if (CurrentSession == null) return;
-                usernameText.Text = CurrentSession.Username;
-                PlayerUUID uid = await Mojang.GetUUID(usernameText.Text);
-                PlayerProfile p = await Mojang.GetProfileUsingUUID(uid.UUID);
+            if (CurrentSession == null) return;
+            Dispatcher.Invoke(() => usernameText.Text = CurrentSession.Username);
+            PlayerProfile p = await Mojang.GetProfileUsingUUID(CurrentSession.UUID);
 
-                MemoryStream skinData = new MemoryStream(WebClient.DownloadData(new Uri(p.Skin.Url)));
-                Console.WriteLine(p.Skin.Url);
-                Bitmap skin = new Bitmap(skinData);
-                skin = skin.Clone(new System.Drawing.Rectangle(8, 8, 8, 8), skin.PixelFormat);
+            MemoryStream skinData = new MemoryStream(await WebClient.DownloadDataTaskAsync(new Uri(p.Skin.Url)));
+            Bitmap skin = new Bitmap(skinData);
+            skin = skin.Clone(new System.Drawing.Rectangle(8, 8, 8, 8), skin.PixelFormat);
 
-                skinData = new MemoryStream();
-                skin.Save(skinData, System.Drawing.Imaging.ImageFormat.Bmp);
-                skinData.Position = 0;
-                BitmapImage bitmapimage = new BitmapImage();
-                bitmapimage.BeginInit();
-                bitmapimage.StreamSource = skinData;
-                bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapimage.EndInit();
-                Skin.Source = bitmapimage;
-            });
+            skinData = new MemoryStream();
+            skin.Save(skinData, System.Drawing.Imaging.ImageFormat.Bmp);
+            skinData.Position = 0;
+            BitmapImage bitmapimage = new BitmapImage();
+            bitmapimage.BeginInit();
+            bitmapimage.StreamSource = skinData;
+            bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
+            bitmapimage.EndInit();
+            Dispatcher.Invoke(() => Skin.Source = bitmapimage);
+            return;
         }
         public bool settingsOpen = false;
         public bool loginScreenOpen = true;
@@ -214,29 +212,33 @@ namespace SharpLauncher_MC
 #endif
         private void Play_click(object sender, RoutedEventArgs e)
         {
-#if DEBUG
-            MessageBox.Show($"V: {Environment.OSVersion.Version.ToString()}");
-            MessageBox.Show(p.GetArguments().Replace(" -", "\n-").Replace(";", ";\n        "));
-#endif
+            p.Start();
         }
 
         private void showPass(object sender, RoutedEventArgs e) => loginPassword.IsPass = !loginPassword.IsPass;
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e) => Process.Start(((Hyperlink)sender).NavigateUri.AbsoluteUri);
 
-        private async void Login_Click(object sender, RoutedEventArgs e)
+        private void Login_Click(object sender, RoutedEventArgs e)
         {
-            MojangAuth auth = new MojangAuth(HttpClient);
-            MojangAuthResponse res = await auth.Authenticate(loginUsername.Text, loginPassword.Text);
-            if (res.IsSuccess)
+            loginMessage.Text = "Logging in...";
+            new Thread(async () =>
             {
-                CurrentSession = res.Session;
-                toggleLogin();
-            }
-            else
-            {
-                loginMessage.Text = "Wrong authorization data.";
-            }
+                await Dispatcher.Invoke(async () =>
+                {
+                    MojangAuthResponse res = await MojangAuth.Authenticate(loginUsername.Text, loginPassword.Text);
+                    if (res.IsSuccess)
+                    {
+                        CurrentSession = res.Session;
+                        loginMessage.Text = "Connected!";
+                        await Task.WhenAll(updateSkin());
+                        toggleLogin();
+                    }
+                    else Dispatcher.Invoke(() => loginMessage.Text = "Wrong authorization data.");
+                });
+            }).Start();
         }
+        private void loginUsername_ReturnPressed(object sender, KeyEventArgs e) => loginPassword.Focus();
+        private void loginPassword_ReturnPressed(object sender, KeyEventArgs e) => Login_Click(sender, null);
     }
 }

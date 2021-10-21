@@ -202,6 +202,8 @@
     <Compile Include="Config.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="JSON\Arguments.cs" />
+    <Compile Include="JSON\AssetIndex.cs" />
+    <Compile Include="JSON\AssetIndexObject.cs" />
     <Compile Include="JSON\ClassicLauncher\ClassicLauncherProfilesList.cs" />
     <Compile Include="JSON\Classifiers.cs" />
     <Compile Include="JSON\Condition.cs" />
@@ -321,6 +323,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Libraries\STDOuter.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Properties\AssemblyInfo.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>AssemblyInfo.cs</LastGenOutput>

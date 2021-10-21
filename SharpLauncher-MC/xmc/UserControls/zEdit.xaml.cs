@@ -25,10 +25,14 @@ namespace xmc.uc
 
 
             // CUSTOM STYLING
-            this.BorderThickness = new Thickness(0, 0, 0, 2);
+            this.BorderThickness = new Thickness(0, 0, 0, 1);
             this.BorderBrush = new SolidColorBrush(zGlobals.decorationColor);
         }
-
+        public new void Focus()
+        {
+            if (IsPass) txPass.Focus();
+            else tx.Focus();
+        }
         private void onLoad(object sender, RoutedEventArgs e)
         {
             gr.Background = Background;
@@ -54,7 +58,7 @@ namespace xmc.uc
         }
         public event EventHandler StringCountChanged;
         public event TextChangedEventHandler TextChanged;
-        public event EventHandler ReturnPressed;
+        public event KeyEventHandler ReturnPressed;
 
         public static readonly DependencyProperty IsPassProperty = DependencyProperty.Register("IsPass", typeof(bool), typeof(zEdit), new PropertyMetadata(false));
         public static readonly DependencyProperty StringsCountProperty = DependencyProperty.Register("StringsCount", typeof(int), typeof(zEdit), new PropertyMetadata(0));
@@ -172,11 +176,9 @@ namespace xmc.uc
             int length = tx.Text.IndexOf('\r') + (tx.Text.Length != 0 ? 1 : 0);
             if (length != StringsCount)
             {
-                if (Multi_) return;
                 SetValue(StringsCountProperty, length);
                 if (StringCountChanged != null) StringCountChanged.Invoke(sender, (EventArgs)e);
             }
-            else if (ReturnPressed != null) ReturnPressed.Invoke(sender, (EventArgs)e);
             if (TextChanged != null) TextChanged.Invoke(sender, e);
             updatePlaceholderVisibility();
         }
@@ -185,13 +187,16 @@ namespace xmc.uc
             int length = txPass.Password.IndexOf('\r') + (txPass.Password.Length != 0 ? 1 : 0);
             if (length != StringsCount)
             {
-                if (Multi_) return;
                 SetValue(StringsCountProperty, length);
                 if (StringCountChanged != null) StringCountChanged.Invoke(sender, (EventArgs)e);
             }
-            else if (ReturnPressed != null) ReturnPressed.Invoke(sender, (EventArgs)e);
             if (TextChanged != null) TextChanged.Invoke(sender, null);
             updatePlaceholderVisibility();
+        }
+
+        private void tx_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return && ReturnPressed != null) ReturnPressed.Invoke(sender, (KeyEventArgs)e);
         }
     }
 }
