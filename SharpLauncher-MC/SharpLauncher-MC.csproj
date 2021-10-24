@@ -323,7 +323,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Libraries\STDOuter.dll">
+    <Content Include="Libraries\LogKX.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Properties\AssemblyInfo.tt">

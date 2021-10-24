@@ -44,11 +44,14 @@ namespace SharpLauncher_MC
         {
             return "windows"; // because of wpf and dotnet framework
         }
-        [DllImport("Libraries\\STDOuter.dll")]
+        [DllImport("Libraries\\LogKX.dll")]
         public static extern void StartWithLogger(string prc, string arg, string workDir);
         public MainWindow()
         {
             InitializeComponent();
+#if DEBUG
+            Login.Visibility = Visibility.Collapsed;
+#endif
             VersionText.Text = $"{Assembly.GetExecutingAssembly().GetName().Name} v{Assembly.GetExecutingAssembly().GetName().Version}";
             this.Title = $"SLMC, build {Assembly.GetExecutingAssembly().GetName().Version.Revision}";
 

@@ -38,7 +38,7 @@ namespace SharpLauncher_MC.JSON
         public List<Task> LibraryTasks = new List<Task>();
         public void DownloadAssets()
         {
-            var assetsPath = this.profileAssets ? $"{Config.i.minecraftPath}/profiles/{this.name}/assets" : $"{Config.i.minecraftPath}/assets";
+            var assetsPath = this.profileAssets ? $"{GetProfilePath()}/assets" : $"{Config.i.minecraftPath}/assets";
             var assets = JsonConvert.DeserializeObject<AssetIndex>(assetIndex.DownloadString());
             foreach(KeyValuePair<string, AssetIndexObject> kvp in assets.objects)
             {
@@ -116,27 +116,19 @@ namespace SharpLauncher_MC.JSON
                 var args = GetArguments();
                 DownloadAssets();
                 await Task.WhenAll(LibraryTasks);
-                Console.WriteLine($"{GetJavaExecutable()}{args}");
-                MessageBox.Show($"{GetJavaExecutable()}\n{args.Replace(" -", "\n-").Replace(";", ";\n        ")}");
+                Console.WriteLine($"\"{GetJavaExecutable()}\" {String.Join(" ", args)}");
+                await Task.Delay(250); // strange crash after all tasks are finished, maybe it'll fix stuff
                 LibraryTasks.ForEach(t => t.Dispose());
                 LibraryTasks.Clear();
-//                MainWindow.StartWithLogger(GetJavaExecutable().Replace("\"", ""), args, "");
+                MainWindow.StartWithLogger(GetJavaExecutable(), String.Join("~~~", args), GetProfilePath());
             }).Start();
         }
-        public string GetJavaExecutable()
+        public string GetJavaExecutable() => Path.GetFullPath($"{(this.javaPath == "" ? Config.i.javaPath : javaPath)}/javaw.exe");
+        public string GetProfilePath() => Path.GetFullPath($"{Config.i.minecraftPath}/profiles/{this.name}");
+        public string GetAssetsPath() => Path.GetFullPath(this.profileAssets ? $"{GetProfilePath()}/assets" : $"{Config.i.minecraftPath}/assets");
+        public List<string> GetArguments()
         {
-            string t = "";
-            if (this.javaPath == "")
-                t += $"{Config.i.javaPath}";
-            else
-                t += $"{javaPath}";
-            t += "/javaw.exe";
-
-            return replaceArg(Path.GetFullPath(t));
-        }
-        public string GetArguments()
-        {
-            string args = toArgs(arguments.jvm);
+            List<string> args = toArgs(arguments.jvm);
             var classpath = "";
             List<Library> natives = new List<Library>();
             foreach(Library l in this.libraries)
@@ -158,31 +150,31 @@ namespace SharpLauncher_MC.JSON
                         natives.Add(l);
                 }
             }
-            classpath += $"{Path.GetFullPath($"{Config.i.minecraftPath}/versions/{this.id}/{this.id}.jar")} ";
+            classpath += $"{Path.GetFullPath($"{Config.i.minecraftPath}/natives/{this.id}/{this.id}.jar")} ";
             LibraryTasks.Add(this.downloads.client.DownloadTask($"{Config.i.minecraftPath}/versions/{this.id}/{this.id}.jar"));
             var nativesPath = Path.GetFullPath($"{Config.i.minecraftPath}/natives/{this.id}");
-            args = args.Replace("${classpath}", classpath).Replace("${natives_directory}", nativesPath);
+            for(int i = 0; i < args.Count; i++) { args[i] = args[i].Replace("${classpath}", classpath).Replace("${natives_directory}", nativesPath); }
             ExtractNatives(natives, nativesPath);
 
-            if (this.addSharedJavaArgs)
-                args += $"{Config.i.javaArgs} ";
-
-            args += $"{javaArgs} ";
-            args += this.logging.client.argument.Replace("${path}", $"{Path.GetFullPath($"{Config.i.minecraftPath}/assets/log_configs/{this.logging.client.file.id}")} {this.mainClass} ");
+            if (this.addSharedJavaArgs && Config.i.javaArgs.Length != 0)
+                args.AddRange(Config.i.javaArgs.Split(' '));
+            if(javaArgs.Length != 0)
+                args.AddRange(javaArgs.Split(' '));
+            args.Add(this.logging.client.argument.Replace("${path}", $"{Path.GetFullPath($"{Config.i.minecraftPath}/assets/log_configs/{this.logging.client.file.id}")} {this.mainClass}"));
             this.logging.client.file.DownloadTask($"{Config.i.minecraftPath}/assets/log_configs/{this.logging.client.file.id}");
-            args += toArgs(arguments.game);
-            new DirectoryInfo(Path.GetFullPath($"{Config.i.minecraftPath}/profiles/{this.name}")).Create();
+            args.AddRange(toArgs(arguments.game));
+            new DirectoryInfo(GetProfilePath()).Create();
             return args;
         }
 
-        private string toArgs(object[] list)
+        private List<string> toArgs(object[] list)
         {
-            string args = "";
+            List<string> args = new List<string>();
             foreach (object obj in list)
             {
                 if (obj is string)
                 {
-                    args += replaceArg((string)obj);
+                    args.AddRange(replaceArg((string)obj));
                 }
                 else
                 {
@@ -190,11 +182,11 @@ namespace SharpLauncher_MC.JSON
                     if (condition != null)
                         if (condition.Result(this))
                             if (condition.value is JArray conditionArray)
-                                args += replaceArg(conditionArray.ToObject<string[]>());
+                                args.AddRange(replaceArg(conditionArray.ToObject<string[]>()));
                             else
                             {
                                 if (condition.value is string conditionString)
-                                    args += replaceArg(conditionString);
+                                    args.AddRange(replaceArg(conditionString));
                                 else
                                     Console.WriteLine($"Condition value is undefined:\n{JsonConvert.SerializeObject(obj)}");
                             }
@@ -206,13 +198,13 @@ namespace SharpLauncher_MC.JSON
             }
             return args;
         }
-        private string replaceArg(string arg)
+        private List<string> replaceArg(string arg)
         {
             return replaceArg(new string[]{ arg });
         }
-        private string replaceArg(string[] args)
+        private List<string> replaceArg(string[] args)
         {
-            string final = "";
+            List<string> final = new List<string>();
             var lSession = this.sharedSession ? MainWindow.CurrentSession : this.session;
             foreach (string sT in args)
             {
@@ -231,8 +223,8 @@ namespace SharpLauncher_MC.JSON
                 // GAME
                 s = s
                     .Replace(@"${version_name}", this.id)
-                    .Replace(@"${game_directory}", Path.GetFullPath($"{Config.i.minecraftPath}/profiles/{this.name}"))
-                    .Replace(@"${assets_root}", this.profileAssets ? Path.GetFullPath($"{Config.i.minecraftPath}/profiles/{this.name}/assets") : Path.GetFullPath($"{Config.i.minecraftPath}/assets"))
+                    .Replace(@"${game_directory}", GetProfilePath())
+                    .Replace(@"${assets_root}", GetAssetsPath())
                     .Replace(@"${assets_index_name}", this.assetIndex.id)
                     .Replace(@"${version_type}", this.type)
 
@@ -247,7 +239,7 @@ namespace SharpLauncher_MC.JSON
                         .Replace(@"${resolution_width}", this.resolution.width.ToString())
                         .Replace(@"${resolution_height}", this.resolution.height.ToString());
                 }
-                final += $"{s} ";
+                final.Add(s);
             }
             return final;
         }
