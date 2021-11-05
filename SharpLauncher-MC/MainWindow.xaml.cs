@@ -44,8 +44,9 @@ namespace SharpLauncher_MC
         {
             return "windows"; // because of wpf and dotnet framework
         }
-        [DllImport("Libraries\\LogKX.dll")]
-        public static extern void StartWithLogger(string prc, string arg, string workDir);
+        public static void StartWithLogger(string prc, List<string> args, string workDir) {
+            Process.Start(System.IO.Path.GetFullPath("LogKX.exe"), $"\"{prc}\" \"{workDir}\" {String.Join(" ", args)}");
+        }
         public MainWindow()
         {
             InitializeComponent();

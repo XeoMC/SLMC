@@ -116,11 +116,11 @@ namespace SharpLauncher_MC.JSON
                 var args = GetArguments();
                 DownloadAssets();
                 await Task.WhenAll(LibraryTasks);
+#if DEBUG
                 Console.WriteLine($"\"{GetJavaExecutable()}\" {String.Join(" ", args)}");
-                await Task.Delay(250); // strange crash after all tasks are finished, maybe it'll fix stuff
-                LibraryTasks.ForEach(t => t.Dispose());
+#endif
                 LibraryTasks.Clear();
-                MainWindow.StartWithLogger(GetJavaExecutable(), String.Join("~~~", args), GetProfilePath());
+                MainWindow.StartWithLogger(GetJavaExecutable(), args, GetProfilePath());
             }).Start();
         }
         public string GetJavaExecutable() => Path.GetFullPath($"{(this.javaPath == "" ? Config.i.javaPath : javaPath)}/javaw.exe");
@@ -150,7 +150,7 @@ namespace SharpLauncher_MC.JSON
                         natives.Add(l);
                 }
             }
-            classpath += $"{Path.GetFullPath($"{Config.i.minecraftPath}/natives/{this.id}/{this.id}.jar")} ";
+            classpath += $"{Path.GetFullPath($"{Config.i.minecraftPath}/versions/{this.id}/{this.id}.jar")}";
             LibraryTasks.Add(this.downloads.client.DownloadTask($"{Config.i.minecraftPath}/versions/{this.id}/{this.id}.jar"));
             var nativesPath = Path.GetFullPath($"{Config.i.minecraftPath}/natives/{this.id}");
             for(int i = 0; i < args.Count; i++) { args[i] = args[i].Replace("${classpath}", classpath).Replace("${natives_directory}", nativesPath); }
